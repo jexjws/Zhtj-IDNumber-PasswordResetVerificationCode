@@ -38,7 +38,7 @@ def gogo(i:str) -> dict[str, str]:
     req = None
     headers = None
     状态码 = 0
-    for teacherscookie_i in range(0, 4, 1):
+    for teacherscookie_i in range(0, len(teacherscookie), 1):
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0",
             "Cookie": teacherscookie[teacherscookie_i],
