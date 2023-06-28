@@ -10,7 +10,7 @@ tokens = [""] * 4
 
 def handler(id_: str) -> dict[str, str]:
     req = None
-    status = None
+    status = False
     for idx_, token in enumerate(tokens):
         req = utils.post("fullSearchUser", token, {"identityCardNo": id_})
         print(req.text)
@@ -23,29 +23,34 @@ def handler(id_: str) -> dict[str, str]:
         if req.json()["retMsg"] == "只能查询本级及下级团组织团员":
             print(f"{idx_} 号cookie无权限,开始切换到下一个cookie.")
         elif req.json()["retCode"] == 1001:
-            status = "成员错误"
+            status = False
         else:
-            status = "OK"
+            status = True
 
     if req is None:
         raise EOFError
 
-    if status == "成员错误" or status is None:
-        return {'status': StatusCookieOK, 'data': (id_ + "：" + req.json()["retMsg"] + "\n")}
+    if not status:
+        return {
+            'status': StatusCookieOK,
+            'data': f"{id_}: {req.json()['retMsg']}\n",
+        }
 
-    uid = req.json()["results"]["userList"][0]["userId"]
-    leagueId = req.json()["results"]["userList"][0]["leagueId"]
-    if len(req.json()["results"]["userList"]) > 1:
+    result = req.json()["results"]["userList"]
+    
+    uid = result[0]["userId"]
+    leagueId = result[0]["leagueId"]
+    if len(result["userList"]) > 1:
         raise EOFError
 
-    print("获取到的UID：" + uid)
-    print("获取到的leagueId：" + leagueId)
+    print("获取到的UID:", uid)
+    print("获取到的leagueId:", leagueId)
 
     result = utils.post("tuanyuan/logincode", tokens[-1], {"userId": uid, "leagueId": leagueId}).json()["results"]
 
     return {
         'status': StatusCookieOK,
-        'data': f"{result.http('name')}：{result.http('loginCode')}\n"
+        'data': f"{result.http('name')}: {result.http('loginCode')}\n",
     }
 
 
@@ -54,7 +59,7 @@ st.write("欢迎使用验证码批量获取器（beta version），本工具为�
 
 
 def showPasswordInputPanel():
-    st.text_input("使用密码：", key="password", placeholder="", autocomplete="etfcsdxx")
+    st.text_input("使用密码: ", key="password", placeholder="", autocomplete="etfcsdxx")
     st.button("验证", use_container_width=True, type="primary")
 
 
@@ -67,7 +72,7 @@ else:
     showPasswordInputPanel()
     exit()
 
-inputBox = st.text_area("在此处粘贴包含待获取验证码的身份证号的文段：", key="input", placeholder="点击按钮开始处理")
+inputBox = st.text_area("在此处粘贴包含待获取验证码的身份证号的文段: ", key="input", placeholder="点击按钮开始处理")
 
 st.button("开始处理", type="primary", key="wtf", use_container_width=True)
 
@@ -104,4 +109,4 @@ with st.spinner("正在获取验证码"):
         outputArea.code(output, language=None)
         identityWidget.error('有登陆凭据已过期。请联系工具维护者更新登陆凭据。', icon="🚨")
     else:
-        identityWidget.error('出现未知错误：' + state['data'], icon="❌")
+        identityWidget.error('出现未知错误: ' + state['data'], icon="❌")
