@@ -2,7 +2,7 @@ import time
 import re
 import streamlit as st
 import utils
-from types import *
+
 
 password = 'ikun'
 tokens = ["","",""]
@@ -16,9 +16,9 @@ def handler(id_: str) -> dict[str, str]:
         print(req.text)
 
         if req.text == "您的登录已超时，请重新登录":
-            return {'status': StatusCookieError, 'data': '您的登录已超时，请重新登录'}
+            return {'status': "TokenError", 'data': '您的登录已超时，请重新登录'}
         if req.json()["retCode"] == 1009:
-            return {'status': StatusCookieError, 'data': req.json()["retMsg"]}
+            return {'status': "TokenError", 'data': req.json()["retMsg"]}
 
         if req.json()["retMsg"] == "只能查询本级及下级团组织团员":
             print(f"{idx_} 号cookie无权限,开始切换到下一个cookie.")
@@ -32,7 +32,7 @@ def handler(id_: str) -> dict[str, str]:
 
     if not status:
         return {
-            'status': StatusCookieOK,
+            'status': "ok",
             'data': f"{id_}: {req.json()['retMsg']}\n",
         }
 
@@ -49,7 +49,7 @@ def handler(id_: str) -> dict[str, str]:
     result = utils.post("tuanyuan/logincode", tokens[-1], {"userId": uid, "leagueId": leagueId}).json()["results"]
 
     return {
-        'status': StatusCookieOK,
+        'status': "ok",
         'data': f"{result.http('name')}: {result.http('loginCode')}\n",
     }
 
@@ -92,22 +92,22 @@ if __name__ == "__main__":
         outputArea = st.empty()
         identityWidget = st.empty()
         time.sleep(2)
-        state = {'status': StatusCookieOK}
+        state = {'status': "ok"}
 
         for idx, obj in enumerate(identity):
             identityWidget.text(f'正在处理第 {idx + 1} 个  共 {len(identity)} 个')
             res = handler(obj)
 
-            if not res['status'] == StatusCookieOK:
+            if not res['status'] == "ok":
                 state = res
                 break
             output += res['data']
             time.sleep(0.2)
             outputArea.code(output, language=None)
 
-        if state["status"] == StatusCookieOK:
+        if state["status"] == "ok":
             identityWidget.success("完毕", icon='✅')
-        elif state["status"] == StatusCookieError:
+        elif state["status"] == "TokenError":
             output += state["data"]
             outputArea.code(output, language=None)
             identityWidget.error('有登陆凭据已过期。请联系工具维护者更新登陆凭据。', icon="🚨")
