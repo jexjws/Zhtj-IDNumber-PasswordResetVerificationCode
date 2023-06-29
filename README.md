@@ -13,5 +13,5 @@
 4. 使用`pip install -r requirements-gui.txt`指令安装项目所需要的依赖项目
 5. 使用管理员账号登入[智慧团建](https://zhtj.youth.cn/zhtj/)，获取账号 Token（可以将其理解为通行令牌），填入main.py文件第8行第一个`""`中
    > 你可能注意到有多个`""`，这意味着你可以同时填入多个管理账号的 Token，对于每一个身份证号，程序会先使用填入的第一个Token搜索身份证号对应的账户，当收到`只能查询本级及下级团组织团员`消息时，会自动切换到下一个Token重新搜索。
-7. 运行`streamlit run main.py`，此时会自动打开一个浏览器窗口，你就可以在其中执行批量获取重置密码验证码的操作了。（默认密码是`ikun`）
+7. 运行`streamlit run main.py`，此时会自动打开一个浏览器窗口，你就可以在其中执行批量获取重置密码验证码的操作了（默认密码是`ikun`）
 8. 如有各种疑问，欢迎来[这里](https://github.com/jexjws/Zhtj-IDNumber-PasswordResetVerificationCode/issues)点击`New Issue`提问。
