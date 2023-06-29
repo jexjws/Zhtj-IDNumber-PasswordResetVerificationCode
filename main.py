@@ -5,7 +5,7 @@ import utils
 from types import *
 
 password = 'ikun'
-tokens = [""] * 4
+tokens = ["","",""]
 
 
 def handler(id_: str) -> dict[str, str]:
