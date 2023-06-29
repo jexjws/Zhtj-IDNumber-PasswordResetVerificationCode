@@ -69,6 +69,8 @@ if __name__ == "__main__":
             showPasswordInputPanel()
             st.error('密码错误')
             exit()
+        else:
+            st.session_state['password'] = password
     else:
         showPasswordInputPanel()
         exit()
